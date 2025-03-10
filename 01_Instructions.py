@@ -1,16 +1,37 @@
-# functions go here
+# checks users enter yes (y) or no (n)
+def yes_no(question):
+    while True:
+        response = input(question).lower()
 
-# main routine goes here
+        # check user response, question
+        # repeats if users don't enter yes / no
+        if response == "yes" or response == "y":
+            return "yes"
+        elif response == "no" or response == "n":
+            return "no"
+        else:
+            print("Please enter yes / no")
 
-while True:
-    want_instructions = input("Do you want to read the instructions? ").lower()
 
-    if want_instructions == "yes" or want_instructions == "y":
-        print("Instructions go here")
-        print("program continues")
-        print()
-    elif want_instructions == "no" or want_instructions == "n":
-        print("<program continues>")
-    else:
-        print("please answer yes / no")
+# Displays instructions
 
+
+def instructions():
+    print('''
+
+**** Instructions ****
+
+        ''')
+
+# Main routine
+
+
+print()
+print("Recipe")
+print()
+
+want_instructions = yes_no("Do you want to read the instructions? ").lower()
+
+# check users enter yes (y) or no (n)
+if want_instructions == "yes":
+    instructions()
