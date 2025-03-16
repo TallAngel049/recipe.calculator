@@ -13,23 +13,35 @@ def not_blank(question):
             return response
 
 
-def instructions(yes_no):
-    print("ℹ️ Instructions ℹ️")
+# Functions fo here
+def make_statement(statement, decoration):
+    """Emphasises headings by adding
+    decoration at the start and end"""
 
+    return f"{decoration * 3} {statement} {decoration * 3}"
+
+
+# checks users enter yes (y) or no (n)
+def yes_no(question):
+    while True:
+        response = input(question).lower()
+
+        # check user response, question
+        # repeats if users don't enter yes / no
+        if response == "yes" or response == "y":
+            return "yes"
+        elif response == "no" or response == "n":
+            return "no"
+        else:
+            print("Please enter yes / no")
+
+
+def instructions():
     print('''
 
-Instructions go here
+**** Instructions ****
 
-
-    ''')
-    if want_instructions == "yes" or want_instructions == "y":
-        print("Instructions go here")
-        print("program continues")
-        print()
-    elif want_instructions == "no" or want_instructions == "n":
-        print("<program continues>")
-    else:
-        print("please answer yes / no")
+        ''')
 
 
 def num_check(question, num_type="float", exit_code=None):
@@ -86,17 +98,32 @@ def get_ingredients():
     # return all items for now so we can check loop
     return all_ingredients
 
+
 # Main Routine goes here
 
-# Program main heading
-print("")
-
-# Ask user if they want to see the instructions
-# display as necessary
 print()
-want_instructions = yes_no("Do you want to see the instructions? ")
+print(make_statement("Recipe", "🥞"))
+print()
 
+want_instructions = yes_no("Do you want to read the instructions? ").lower()
+
+# check users enter yes (y) or no (n)
 if want_instructions == "yes":
     instructions()
 
-print()
+name = not_blank("Enter your recipe: ")
+
+num_check("Serving Size? ")
+
+while True:
+    item_name = not_blank("Ingredient needed: ")
+
+    if item_name == "xxx":
+        break
+
+    # next I would assume we would ask the amount and then the unit before the price
+    # so how would I ask that?
+
+    cost_needed = num_check("Cost? ")
+
+# pandas goes here
