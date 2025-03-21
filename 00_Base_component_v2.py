@@ -1,3 +1,6 @@
+import pandas
+from tabulate import tabulate
+
 # functions goes here
 
 # checks that user response is not blank
@@ -21,28 +24,22 @@ def make_statement(statement, decoration):
     return f"{decoration * 3} {statement} {decoration * 3}"
 
 
-def string_checker(question, valid_ans=("yes", "y", "n", "no")):
-
-    error = f"Please enter a valid option from the following list: {valid_ans}"
-
+# checks users enter yes (y) or no (n)
+def yes_no(question):
     while True:
+        response = input(question).lower()
 
-        # Get user response and make sure it's lowercase
-        user_response = input(question).lower()
+        # check user response, question
+        # repeats if users don't enter yes / no
+        if response == "yes" or response == "y":
+            return "yes"
+        elif response == "no" or response == "n":
+            return "no"
+        else:
+            print("Please enter yes / no")
 
-        for item in valid_ans:
-            # check if the user response is a work in the list
-            if item == user_response:
-                return item
-
-            # check if the user response is the same as
-            # the first letter of an item in the list
-            elif user_response == item[0]:
-                return item
-
-            # print error if user does not enter something that is valid
-            print(error)
-            print()
+# string checker goes here....
+def string_checker(question):
 
 
 def instructions():
@@ -92,8 +89,17 @@ def get_ingredients():
 
     # list for pandas
     all_ingredients = []
+    all_amounts = []
+    all_units = []
+    all_cost = []
 
     # expenses dictionary
+    recipe_dict = {
+        "Ingredients": all_ingredients,
+        "Amount": all_amounts,
+        "Unit": all_units,
+        "Cost": all_cost
+    }
 
     # loop to get expenses
     while True:
@@ -114,7 +120,7 @@ print()
 print(make_statement("Recipe", "🥞"))
 print()
 
-want_instructions = string_checker("Do you want to read the instructions? ").lower()
+want_instructions = yes_no("Do you want to read the instructions? ").lower()
 
 # check users enter yes (y) or no (n)
 if want_instructions == "yes":
@@ -131,11 +137,23 @@ while True:
         break
 
     amount_needed = num_check("Amount needed? ")
-    unit = string_checker("Please enter the unit: ", "g, kg, l, ml")
     print()
     cost_needed = num_check("Cost? ")
 
 
 # pandas goes here
 
-# unfinished
+# Get current date for heading frame
+today = date.today()
+day = today.strftime("%d")
+month = today.strftime("%m")
+year = today.strftime("%Y")
+
+recipe_calculator_frame = "what?"
+
+# create data frame / table from dictionary
+recipe_calculator_frame = pandas.DataFrame(recipe_calculator_frame)
+
+# Heading
+panda_heading = make_statement(f"Recipe"
+                               f"({recipe_name}, {day}/{month}/{year}", "🥞")
