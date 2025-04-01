@@ -1,7 +1,10 @@
+from datetime import date
 import pandas
+
 from tabulate import tabulate
 
 # functions goes here
+
 
 # checks that user response is not blank
 def not_blank(question):
@@ -38,14 +41,24 @@ def yes_no(question):
         else:
             print("Please enter yes / no")
 
-# string checker goes here....
-def string_checker(question):
-
 
 def instructions():
     print('''
 
 **** Instructions ****
+
+This program will ask for...
+- The name of your recipe
+- The serving size needed for the recipe
+- The amount needed for the total recipe
+- The unit of the ingredient you listed
+- The cost
+
+The program outputs an itemised list of the amount, unit
+and cost (which includes the cost per serving).
+
+The data will also be write to a text file which has
+the same name name as your recipe and the date. 
 
         ''')
 
@@ -114,6 +127,15 @@ def get_ingredients():
     return all_ingredients
 
 
+# def unit_conversions(question):
+#     if unit == "flour":
+#
+# unit_conversions = {
+#     "flour": {"cups": 120, "grams": 1/120},
+#     "sugar": {"cups": 200, "grams": 1/200},
+# }
+
+
 # Main Routine goes here
 
 print()
@@ -126,7 +148,7 @@ want_instructions = yes_no("Do you want to read the instructions? ").lower()
 if want_instructions == "yes":
     instructions()
 
-name = not_blank("Enter your recipe: ")
+name = not_blank("Enter your recipe name: ")
 
 num_check("Serving Size? ")
 
@@ -140,7 +162,7 @@ while True:
     print()
     cost_needed = num_check("Cost? ")
 
-
+# end of loop
 # pandas goes here
 
 # Get current date for heading frame
@@ -155,5 +177,8 @@ recipe_calculator_frame = "what?"
 recipe_calculator_frame = pandas.DataFrame(recipe_calculator_frame)
 
 # Heading
-panda_heading = make_statement(f"Recipe"
-                               f"({recipe_name}, {day}/{month}/{year}", "🥞")
+heading_string = make_statement(f"Recipe Calculator "
+                                f"({name}, {day}/{month}/{year}", "-")
+
+# list of strings to be outputted / written to file
+to_write = [heading_string]
