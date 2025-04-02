@@ -1,7 +1,6 @@
-from datetime import date
-import pandas
-
-from tabulate import tabulate
+# from datetime import date
+# import pandas
+# from tabulate import tabulate
 
 # functions goes here
 
@@ -19,7 +18,6 @@ def not_blank(question):
             return response
 
 
-# Functions fo here
 def make_statement(statement, decoration):
     """Emphasises headings by adding
     decoration at the start and end"""
@@ -50,9 +48,10 @@ def instructions():
 This program will ask for...
 - The name of your recipe
 - The serving size needed for the recipe
-- The amount needed for the total recipe
-- The unit of the ingredient you listed
-- The cost
+
+Then the program will ask you to list the ingredients 
+needed for your recipe, the amount and the unit. After which
+the program will ask you to give the price, the amount and the unit.
 
 The program outputs an itemised list of the amount, unit
 and cost (which includes the cost per serving).
@@ -127,13 +126,21 @@ def get_ingredients():
     return all_ingredients
 
 
-# def unit_conversions(question):
-#     if unit == "flour":
-#
-# unit_conversions = {
-#     "flour": {"cups": 120, "grams": 1/120},
-#     "sugar": {"cups": 200, "grams": 1/200},
-# }
+def string_check(question, valid_answers=("kg", "g", "ml", "l")):
+    """Check that users enter the correct unit, accept different
+    units based on previous answers"""
+
+    while True:
+
+        response = input(question).lower()
+
+        for item in valid_answers:
+
+            # Check if the response is the entire work
+            if response == item:
+                return item
+
+        print(f"Please choose a valid option, eg {valid_answers}")
 
 
 # Main Routine goes here
@@ -149,9 +156,11 @@ if want_instructions == "yes":
     instructions()
 
 name = not_blank("Enter your recipe name: ")
+print()
 
 num_check("Serving Size? ")
 
+# loop starts here
 while True:
     item_name = not_blank("Ingredient needed: ")
 
@@ -159,26 +168,16 @@ while True:
         break
 
     amount_needed = num_check("Amount needed? ")
-    print()
-    cost_needed = num_check("Cost? ")
+    unit_needed = string_check("Unit? ")
+
+
+print()
+print("Let's go shopping or say something.")
+amount_to_buy = num_check("Amount in supermarket? ")
+unit_to_buy = string_check("Unit? ")
+print()
+cost_needed = num_check("Cost? ")
 
 # end of loop
+
 # pandas goes here
-
-# Get current date for heading frame
-today = date.today()
-day = today.strftime("%d")
-month = today.strftime("%m")
-year = today.strftime("%Y")
-
-recipe_calculator_frame = "what?"
-
-# create data frame / table from dictionary
-recipe_calculator_frame = pandas.DataFrame(recipe_calculator_frame)
-
-# Heading
-heading_string = make_statement(f"Recipe Calculator "
-                                f"({name}, {day}/{month}/{year}", "-")
-
-# list of strings to be outputted / written to file
-to_write = [heading_string]
