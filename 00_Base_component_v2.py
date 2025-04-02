@@ -172,11 +172,14 @@ while True:
 
 
 print()
-print("Let's go shopping or say something.")
-amount_to_buy = num_check("Amount in supermarket? ")
+print("Let's get the market cost????")
+
+amount_to_buy = num_check("Amount? ")
 unit_to_buy = string_check("Unit? ")
 print()
 cost_needed = num_check("Cost? ")
+
+print("Do I make the users do everything in one loop? ")
 
 # end of loop
 
