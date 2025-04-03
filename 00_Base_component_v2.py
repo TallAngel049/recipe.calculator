@@ -1,8 +1,6 @@
-# from datetime import date
+from datetime import date
 # import pandas
 # from tabulate import tabulate
-
-# functions goes here
 
 
 # checks that user response is not blank
@@ -43,7 +41,7 @@ def yes_no(question):
 def instructions():
     print('''
 
-**** Instructions ****
+ ℹ️ Instructions ℹ️
 
 This program will ask for...
 - The name of your recipe
@@ -58,6 +56,8 @@ and cost (which includes the cost per serving).
 
 The data will also be write to a text file which has
 the same name name as your recipe and the date. 
+
+WORK ON THE INSTRUCTIONS!!!!
 
         ''')
 
@@ -113,6 +113,8 @@ def get_ingredients():
         "Cost": all_cost
     }
 
+    print("There is meant to be 6 columns there is only 4 above like WTF")
+
     # loop to get expenses
     while True:
         item_name = not_blank("Ingredient needed: ")
@@ -126,23 +128,23 @@ def get_ingredients():
     return all_ingredients
 
 
-def string_check(question, valid_answers=("kg", "g", "ml", "l")):
+def string_check(question, unit_answers):
     """Check that users enter the correct unit, accept different
     units based on previous answers"""
 
     while True:
-
         response = input(question).lower()
 
-        for item in valid_answers:
+        for item in unit_answers:
 
             # Check if the response is the entire work
             if response == item:
                 return item
 
-        print(f"Please choose a valid option, eg {valid_answers}")
+        print(f"Please choose a valid option, eg {unit_answers}")
 
 
+unit_answers = ["kg", "g", "ml", "l", "tbl", "tablespoon", "cups", "teaspoon", "blank"]
 # Main Routine goes here
 
 print()
@@ -162,25 +164,55 @@ num_check("Serving Size? ")
 
 # loop starts here
 while True:
+    print("Let's start baking...")
     item_name = not_blank("Ingredient needed: ")
 
     if item_name == "xxx":
         break
 
     amount_needed = num_check("Amount needed? ")
-    unit_needed = string_check("Unit? ")
+    unit_needed = string_check("Unit? ", unit_answers)
+    print("How much are you getting???????")
 
+    amount_to_buy = num_check("Amount your buying ")
+    unit_to_buy = string_check("Unit? ", unit_answers)
+    print()
+    cost_needed = num_check("Cost? ")
 
 print()
-print("Let's get the market cost????")
-
-amount_to_buy = num_check("Amount? ")
-unit_to_buy = string_check("Unit? ")
-print()
-cost_needed = num_check("Cost? ")
-
-print("Do I make the users do everything in one loop? ")
-
 # end of loop
 
 # pandas goes here
+
+# *** Get current date for heading and filename ***
+today = date.today()
+
+# Get day, month and year as individual strings
+day = today.strftime("%d")
+month = today.strftime("%m")
+year = today.strftime("%Y")
+
+# make title
+main_heading = make_statement(f"Recipe Calculator"
+                              f"({name}, {day}/{month}/{year}", "🥞")
+
+to_write = [main_heading]
+
+# print area
+print()
+for item in to_write:
+    print(item)
+
+# create file to hold date (add .txt extension)
+file_name = f"{name}_{year}_{month}_{day}"
+write_to = "{}.txt".format(file_name)
+
+text_file = open(write_to, "w+")
+
+# write the item to file
+for item in to_write:
+    text_file.write(item)
+    text_file.write("\n")
+
+print("to do, make a more flexible string checker, make the panda, write better instruction"
+      "finish figuring out the loop")
