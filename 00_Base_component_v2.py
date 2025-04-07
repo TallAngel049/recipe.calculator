@@ -103,6 +103,9 @@ def get_ingredients():
     all_ingredients = []
     all_amounts = []
     all_units = []
+    all_price = []
+    all_amount_buy = []
+    all_unit_buy = []
     all_cost = []
 
     # expenses dictionary
@@ -110,10 +113,11 @@ def get_ingredients():
         "Ingredients": all_ingredients,
         "Amount": all_amounts,
         "Unit": all_units,
+        "Price": all_price,
+        "Buying amount": all_amount_buy,
+        "unit for buying": all_unit_buy,
         "Cost": all_cost
     }
-
-    print("There is meant to be 6 columns there is only 4 above like WTF")
 
     # loop to get expenses
     while True:
@@ -160,7 +164,7 @@ if want_instructions == "yes":
 name = not_blank("Enter your recipe name: ")
 print()
 
-num_check("Serving Size? ")
+serving_size = num_check("Serving Size? ")
 
 # loop starts here
 while True:
@@ -178,6 +182,7 @@ while True:
     unit_to_buy = string_check("Unit? ", unit_answers)
     print()
     cost_needed = num_check("Cost? ")
+    print("Should I go shopping first?")
 
 print()
 # end of loop
@@ -193,26 +198,20 @@ month = today.strftime("%m")
 year = today.strftime("%Y")
 
 # make title
-main_heading = make_statement(f"Recipe Calculator"
-                              f"({name}, {day}/{month}/{year}", "🥞")
+main_heading_string = make_statement(f"Recipe Calculator"
+                                     f"({name}, {day}/{month}/{year}", "🥞")
+serving_size_string = f"Serving Size: {serving_size}"
+recipe_ingredients_string = make_statement("Recipe Ingredients", "=")
+ingredient_price_string = make_statement("Ingredient Price", "=")
 
-to_write = [main_heading]
+print(main_heading_string, serving_size_string, recipe_ingredients_string,
+      ingredient_price_string)
 
-# print area
-print()
-for item in to_write:
-    print(item)
 
-# create file to hold date (add .txt extension)
-file_name = f"{name}_{year}_{month}_{day}"
-write_to = "{}.txt".format(file_name)
-
-text_file = open(write_to, "w+")
-
-# write the item to file
-for item in to_write:
-    text_file.write(item)
-    text_file.write("\n")
-
-print("to do, make a more flexible string checker, make the panda, write better instruction"
+print("to do, make the panda, write better instruction"
       "finish figuring out the loop")
+print("ask the ingredient first, the amount their buying it in, the unit, the amount "
+      "the need, the unit, the price")
+print("OR the ingredient, the amount they need, the unit, the amount their buying"
+      "the unit, the price.")
+print("use draw.io to make the two different loops and document")
