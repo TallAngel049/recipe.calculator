@@ -1,5 +1,5 @@
-from datetime import date
-# import pandas
+# from datetime import date
+import pandas
 # from tabulate import tabulate
 
 
@@ -128,6 +128,12 @@ def get_ingredients():
 
         all_ingredients.append(item_name)
 
+    # make panda
+    recipe_frame = pandas.DataFrame(recipe_dict)
+
+    # calculate cost to make
+    recipe_frame['Cost to make'] = recipe_frame['Price']/recipe_frame['Buying Amount'] * recipe_frame['Amount']
+
     # return all items for now so we can check loop
     return all_ingredients
 
@@ -148,7 +154,7 @@ def string_check(question, unit_answers):
         print(f"Please choose a valid option, eg {unit_answers}")
 
 
-unit_answers = ["kg", "g", "ml", "l", "tbl", "tablespoon", "cups", "teaspoon", "blank"]
+unit_answers = ["kg", "g", "ml", "l", "tbl", "tablespoon", "cups", "teaspoon", ""]
 # Main Routine goes here
 
 print()
@@ -176,36 +182,30 @@ while True:
 
     amount_needed = num_check("Amount needed? ")
     unit_needed = string_check("Unit? ", unit_answers)
-    print("How much are you getting???????")
 
-    amount_to_buy = num_check("Amount your buying ")
-    unit_to_buy = string_check("Unit? ", unit_answers)
-    print()
-    cost_needed = num_check("Cost? ")
-    print("Should I go shopping first?")
 
 print()
 # end of loop
+at_home_ingredients = yes_no("Do you have any ingredients at home? ")
+if at_home_ingredients == "yes":
+    while True:
+        home_ingredient = string_check("Which Ingredient do you have at home? ", valid_answer)
+        if home_ingredient == "xxx":
+            break
+
+elif at_home_ingredients == "no":
+    print()
+    print("Let's go shopping!")
+    while True:
+        ingredient_buying = not_blank("Ingredient?", )
+        amount_to_buy = num_check("Amount your buying : ")
+        unit_to_buy = string_check("Unit? ", unit_answers)
+        print()
+        cost_needed = num_check("Cost? ")
+
+print()
 
 # pandas goes here
-
-# *** Get current date for heading and filename ***
-today = date.today()
-
-# Get day, month and year as individual strings
-day = today.strftime("%d")
-month = today.strftime("%m")
-year = today.strftime("%Y")
-
-# make title
-main_heading_string = make_statement(f"Recipe Calculator"
-                                     f"({name}, {day}/{month}/{year}", "🥞")
-serving_size_string = f"Serving Size: {serving_size}"
-recipe_ingredients_string = make_statement("Recipe Ingredients", "=")
-ingredient_price_string = make_statement("Ingredient Price", "=")
-
-print(main_heading_string, serving_size_string, recipe_ingredients_string,
-      ingredient_price_string)
 
 
 print("to do, make the panda, write better instruction"
@@ -215,3 +215,4 @@ print("ask the ingredient first, the amount their buying it in, the unit, the am
 print("OR the ingredient, the amount they need, the unit, the amount their buying"
       "the unit, the price.")
 print("use draw.io to make the two different loops and document")
+print("Figure out THE PANDA")
