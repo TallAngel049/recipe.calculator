@@ -1,0 +1,186 @@
+from datetime import date
+import pandas
+# from tabulate import tabulate
+
+
+# checks that user response is not blank
+def not_blank(question):
+    while True:
+        response = input(question)
+        if response == "":
+            print("Sorry, this can't be blank. Please try again.")
+        else:
+            return response
+
+
+def make_statement(statement, decoration):
+    """Emphasises headings by adding decoration at start and end"""
+    return f"{decoration * 3} {statement} {decoration * 3}"
+
+
+# checks users enter yes (y) or no (n)
+def yes_no(question):
+    while True:
+        response = input(question).lower()
+        if response in ["yes", "y"]:
+            return "yes"
+        elif response in ["no", "n"]:
+            return "no"
+        else:
+            print("Please enter yes / no")
+
+
+def instructions():
+    print('''
+
+ ℹ️ Instructions ℹ️
+
+This program will ask for...
+- The name of your recipe
+- The serving size needed for the recipe
+
+Then the program will ask you to list the ingredients 
+needed for your recipe, the amount and the unit. After which
+the program will ask you to give the price, the amount and the unit.
+
+The program outputs an itemised list of the amount, unit
+and cost (which includes the cost per serving).
+
+The data will also be written to a text file which has
+the same name as your recipe and the date.
+
+        ''')
+
+
+def num_check(question, num_type="float", exit_code=None):
+    """Checks that response is a float / integer more than zero"""
+    if num_type == "float":
+        error = "Please enter a number more than 0."
+    else:
+        error = "Please enter an integer more than 0."
+
+    while True:
+        response = input(question)
+        if response == exit_code:
+            return response
+
+        try:
+            if num_type == "float":
+                response = float(response)
+            else:
+                response = int(response)
+
+            if response > 0:
+                return response
+            else:
+                print(error)
+
+        except ValueError:
+            print(error)
+
+
+def string_check(question, valid_answers):
+    """Check that users enter the correct unit"""
+    while True:
+        response = input(question).lower()
+        for item in valid_answers:
+            if response == item:
+                return item
+        print(f"Please choose a valid option, eg {valid_answers}")
+
+
+def get_ingredients(unit_answers):
+    """Gets ingredients and costs, returns two pandas"""
+
+    # Lists for pandas
+    ingredient_list = []
+    amount_list = []
+    unit_list = []
+
+    price_list = []
+    amount_buy_list = []
+    unit_buy_list = []
+    cost_list = []
+
+    print("\nEnter your ingredients below. Type 'xxx' when done.\n")
+    while True:
+        ingredient = not_blank("Ingredient needed: ")
+        if ingredient.lower() == "xxx":
+            break
+
+        amount = num_check("Amount needed: ")
+        unit = string_check("Unit? ", unit_answers)
+
+        price = num_check("Price of the full pack ($): ")
+        amount_buy = num_check("How much are you buying? ")
+        unit_buy = string_check("Unit for buying amount? ", unit_answers)
+
+        # Calculate cost to make
+        cost_to_make = (price / amount_buy) * amount
+
+        # Append to lists
+        ingredient_list.append(ingredient)
+        amount_list.append(amount)
+        unit_list.append(unit)
+
+        price_list.append(price)
+        amount_buy_list.append(amount_buy)
+        unit_buy_list.append(unit_buy)
+        cost_list.append(round(cost_to_make, 2))
+
+    # Ingredients panda
+    ingredients_dict = {
+        "Ingredient": ingredient_list,
+        "Amount Needed": amount_list,
+        "Unit": unit_list
+    }
+    ingredients_frame = pandas.DataFrame(ingredients_dict)
+
+    # Buying / Cost panda
+    buying_dict = {
+        "Ingredient": ingredient_list,
+        "Price": price_list,
+        "Buying Amount": amount_buy_list,
+        "Buying Unit": unit_buy_list,
+        "Cost to Make": cost_list
+    }
+    buying_frame = pandas.DataFrame(buying_dict)
+
+    return ingredients_frame, buying_frame
+
+
+# List of acceptable units
+unit_answers = ["kg", "g", "ml", "l", "tbl", "tablespoon", "cups", "teaspoon"]
+
+# Main Routine
+print()
+print(make_statement("Recipe", "🥞"))
+print()
+
+want_instructions = yes_no("Do you want to read the instructions? ").lower()
+
+if want_instructions == "yes":
+    instructions()
+
+# Get basic info
+recipe_name = not_blank("Enter your recipe name: ")
+print()
+serving_size = num_check("Serving Size? ")
+
+# Get ingredients
+ingredients_frame, buying_frame = get_ingredients(unit_answers)
+
+# Output pandas
+print("\n🧂 INGREDIENTS NEEDED 🧂")
+print(ingredients_frame)
+print()
+print("🛒 BUYING & COST DETAILS 🛒")
+print(buying_frame)
+
+# Example of saving to file (optional)
+# today = date.today()
+# filename = f"{recipe_name}_{today}.txt"
+# with open(filename, "w") as file:
+#     file.write(tabulate(ingredients_frame, headers='keys', tablefmt='grid'))
+#     file.write("\n\n")
+#     file.write(tabulate(buying_frame, headers='keys', tablefmt='grid'))
