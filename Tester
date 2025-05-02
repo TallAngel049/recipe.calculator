@@ -184,3 +184,28 @@ print(buying_frame)
 #     file.write(tabulate(ingredients_frame, headers='keys', tablefmt='grid'))
 #     file.write("\n\n")
 #     file.write(tabulate(buying_frame, headers='keys', tablefmt='grid'))
+
+
+    while True:
+        item_name = not_blank("Ingredient needed: ")
+        if item_name == "xxx":
+            break
+
+        amount = num_check("Amount needed: ")
+        unit = string_check("Unit? ", unit_ans)
+        print()
+        amount_buy = num_check("How much are you buying? ")
+        unit_buy = string_check("Unit for buying amount? ", unit_ans)
+        price = num_check("Price: ")
+
+        ingredient_list.append(item_name)
+        amount_list.append(amount)
+        unit_list.append(unit)
+        price_list.append(price)
+        all_amount_buy.append(amount_buy)
+        all_unit_buy.append(unit_buy)
+# Get ingredient data and show panda
+recipe_frame = get_ingredients()
+print()
+print(recipe_frame)
+
