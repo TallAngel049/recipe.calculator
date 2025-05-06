@@ -235,3 +235,15 @@ text_file = open(write_to, "w+")
 for item in to_write:
     text_file.write(item)
     text_file.write("\n")
+
+unit_map = {
+    "kilogram": "kg"
+}
+
+ef string_check(question, valid_map):
+    while True:
+        response = input(question).lower()
+        if response in valid_map:
+            return valid_map[response]
+        else:
+            print(f"Please choose a valid option, e.g.
