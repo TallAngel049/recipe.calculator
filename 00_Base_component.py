@@ -5,7 +5,6 @@ from tabulate import tabulate
 
 # checks that user response is not blank
 def not_blank(question):
-
     while True:
         response = input(question)
 
@@ -49,7 +48,7 @@ This program will ask for...
 
 Then the program will ask you to list the ingredients 
 needed for your recipe, the amount and the unit. After which
-the program will ask you to give the price, the amount and the unit.
+the program will ask you to give the amount, and the price,.
 
 The program outputs an itemised list of the amount, unit
 and cost (which includes the cost per serving).
@@ -93,23 +92,19 @@ def num_check(question, num_type="float", exit_code=None):
             print(error)
 
 
-def string_check(question, valid_answers):
-    """Check that users enter the correct unit, accept different
-    units based on previous answers"""
-
+def string_check(question, valid_ans):
     while True:
         response = input(question).lower()
 
-        for item in valid_answers:
+        # checks user response
+        if response in valid_ans:
+            return valid_ans[response]
 
-            # Check if the response is the entire work
-            if response == item:
-                return item
-
-        print(f"Please choose a valid option, eg {valid_answers}")
+        else:
+            print(f"Please choose a valid option, eg 'kg'.")
 
 
-def get_ingredients(unit_ans, rec_type):
+def get_ingredients(rec_type):
     """Gets variable / fixed expenses and outputs
     panda (as a sting) and a subtotal of expenses"""
 
@@ -118,9 +113,9 @@ def get_ingredients(unit_ans, rec_type):
     amount_list = []
     unit_list = []
 
-    price_list = []
     all_amount_buy = []
     all_unit_buy = []
+    price_list = []
 
     # loop starts here
     while True:
@@ -130,47 +125,70 @@ def get_ingredients(unit_ans, rec_type):
             break
 
         amount = num_check("Amount needed: ")
-        unit = string_check("Unit? ", unit_ans)
+        unit = string_check("Unit? ", unit_map)
         print()
         amount_buy = num_check("How much are you buying? ")
-        unit_buy = string_check("Unit for buying amount? ", unit_ans)
+        unit_buy = string_check("Unit for buying amount? ", unit_map)
         price = num_check("Price: ")
 
         ingredient_list.append(item_name)
         amount_list.append(amount)
         unit_list.append(unit)
-        price_list.append(price)
+
+        # second panda
         all_amount_buy.append(amount_buy)
         all_unit_buy.append(unit_buy)
+        price_list.append(price)
 
-    # recipe dictionary
+    # recipes dictionary
     recipe_dict = {
         "Ingredients": ingredient_list,
         "Amount": amount_list,
         "Unit": unit_list,
-        "Price": price_list,
         "Buying Amount": all_amount_buy,
         "Buying Unit": all_unit_buy,
+        "Price": price_list,
     }
 
-    # make panda
     recipe_frame = pandas.DataFrame(recipe_dict)
 
     # calculate cost to make
-    recipe_frame['Cost to make'] = recipe_frame['Price']/recipe_frame['Buying Amount'] * recipe_frame['Amount']
+    recipe_frame['Cost to make'] = recipe_frame['Price'] / recipe_frame['Buying Amount'] * recipe_frame['Amount']
 
     # make expenses frame into a string with the desired columns
     if rec_type == "variable":
         recipe_string = tabulate(recipe_frame, headers='keys', tablefmt='psql', showindex=False)
     else:
-        recipe_string = tabulate(recipe_frame[['Ingredients', 'Price']], headers='keys', tablefmt='psql', showindex=False)
+        recipe_string = tabulate(recipe_frame[['Ingredients', 'Price']], headers='keys',
+                                 tablefmt='psql', showindex=False)
 
-    # return all items for now so we can check loop.
+    # return all items
     return recipe_string
 
 
-unit_ans = ["kg", "g", "ml", "l", "tbl",
-            "tablespoon", "cups", "teaspoon", ""]
+# unit map valid ans
+unit_map = {
+    "kg": "kg",
+    "kilogram": "kg",
+    "kilograms": "kg",
+    "g": "g",
+    "gram": "g",
+    "grams": "g",
+    "ml": "ml",
+    "milliliter": "ml",
+    "milliliters": "ml",
+    "l": "l",
+    "litre": "l",
+    "litres": "l",
+    "tablespoon": "tbl",
+    "tbl": "tbl",
+    "teaspoon": "tsp",
+    "tsp": "tsp",
+    "cup": "cups",
+    "cups": "cups",
+    "c": "cups",
+    "": ""
+}
 
 
 # Main Routine goes here
@@ -193,11 +211,6 @@ print()
 # Checks that users entered a valid serving size
 serving_size = num_check("Serving Size? ")
 
-recipe_frame = get_ingredients(unit_ans, rec_type="variable")
-
-
-print()
-
 # *** Get current date for heading and filename ***
 today = date.today()
 
@@ -207,30 +220,35 @@ month = today.strftime("%m")
 year = today.strftime("%Y")
 
 # Headings / strings
-# main_heading_string = make_statement(f"Recipe Calculator "
-#                                      f"({name}, {day}/{month}/{year})", "--")
-# serving_size_string = f"Serving Size being made: {serving_size}"
-# print(recipe_frame)
-# cost_to_make_string = f"Total cost to make:"
-#
-# to_write = [main_heading_string,
-#             "\n", serving_size_string,
-#             "\n", cost_to_make_string,
-#             "\n", ]
+main_heading_string = make_statement(f"Recipe Calculator "
+                                     f"({name}, {day}/{month}/{year})", "--")
+serving_size_string = f"Serving Size being made: {serving_size}"
 
+total_cost_to_make_string = f"Total: HOW DO I DO THIS"
+per_serve_string = f"Per Serve: AND THIS????"
+
+# Pandas write to file
+recipe_ingredients_string = get_ingredients("variable")
+
+# write to file
+to_write = [main_heading_string,
+            "\n", serving_size_string,
+            "\n", recipe_ingredients_string,
+            total_cost_to_make_string,
+            per_serve_string]
 
 # print area
-# print()
-# for item in to_write:
-#     print(item)
-#
-# # create file to hold date (add .txt extension)
-# file_name = f"{name}_{year}_{month}_{day}"
-# write_to = "{}.txt".format(file_name)
-#
-# text_file = open(write_to, "w+")
-#
-# # write the item to file
-# for item in to_write:
-#     text_file.write(item)
-#     text_file.write("\n")
+print()
+for item in to_write:
+    print(item)
+
+# create file to hold date (add .txt extension)
+file_name = f"{name}_{year}_{month}_{day}"
+write_to = "{}.txt".format(file_name)
+
+text_file = open(write_to, "w+")
+
+# write the item to file
+for item in to_write:
+    text_file.write(item)
+    text_file.write("\n")
