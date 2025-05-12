@@ -211,6 +211,11 @@ print()
 # Checks that users entered a valid serving size
 serving_size = num_check("Serving Size? ")
 
+
+# Total and per serve
+total_cost = recipe_frame['Cost to make'].sum()
+per_serve = total_cost / serving_size
+
 # *** Get current date for heading and filename ***
 today = date.today()
 
@@ -224,18 +229,16 @@ main_heading_string = make_statement(f"Recipe Calculator "
                                      f"({name}, {day}/{month}/{year})", "--")
 serving_size_string = f"Serving Size being made: {serving_size}"
 
-
 # Pandas write to file
 recipe_string = get_ingredients("variable")
 
-total_cost_to_make_string = f"Total: HOW DO I DO THIS"
-per_serve_string = f"Per Serve: AND THIS????"
-
+total_cost_to_make_string = f"\nTotal: ${total_cost:.2f}"
+per_serve_string = f"Per Serve: ${per_serve:.2f}"
 
 # write to file
 to_write = [main_heading_string,
             "\n", serving_size_string,
-            "\n", recipe_string]
+            "\n", recipe_string,]
 
 # print area
 print()
