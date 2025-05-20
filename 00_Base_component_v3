@@ -1,0 +1,194 @@
+from datetime import date
+import pandas
+from tabulate import tabulate
+
+# === Utility Functions ===
+
+def not_blank(question):
+    while True:
+        response = input(question)
+        if response == "":
+            print("Sorry, this can't be blank.")
+        else:
+            return response
+
+
+def make_statement(statement, decoration):
+    return f"{decoration * 3} {statement} {decoration * 3}"
+
+
+def yes_no(question):
+    while True:
+        response = input(question).lower()
+        if response in ["yes", "y"]:
+            return "yes"
+        elif response in ["no", "n"]:
+            return "no"
+        else:
+            print("Please enter yes / no")
+
+
+def instructions():
+    print('''
+ℹ️ Instructions ℹ️
+
+This program will ask for:
+- The name of your recipe
+- The serving size
+- Ingredients, amount needed, and cost
+
+It will calculate the cost to make and cost per serve,
+and write it to a file.
+    ''')
+
+
+def num_check(question, num_type="float", exit_code=None):
+    error = "Please enter a valid number greater than 0." if num_type == "float" else "Please enter a valid integer greater than 0."
+    while True:
+        response = input(question)
+        if response == exit_code:
+            return response
+        try:
+            value = float(response) if num_type == "float" else int(response)
+            if value > 0:
+                return value
+            else:
+                print(error)
+        except ValueError:
+            print(error)
+
+
+def string_check(question, valid_ans):
+    while True:
+        response = input(question).lower()
+        if response in valid_ans:
+            return valid_ans[response]
+        else:
+            print("Please choose a valid unit, e.g. 'kg', 'g', 'ml', etc.")
+
+
+# === Data Setup ===
+
+unit_map = {
+    "kg": "kg", "kilogram": "kg", "kilograms": "kg",
+    "g": "g", "gram": "g", "grams": "g",
+    "l": "l", "litre": "l", "litres": "l",
+    "ml": "ml", "milliliter": "ml", "milliliters": "ml",
+    "tbl": "tbl", "tablespoon": "tbl",
+    "tsp": "tsp", "teaspoon": "tsp",
+    "cups": "cups", "cup": "cups", "c": "cups",
+    "": ""
+}
+
+unit_conversion = {
+    "kg": 1000, "g": 1,
+    "l": 1000, "ml": 1,
+    "tbl": 15, "tsp": 5,
+    "cups": 240,
+    "": 1
+}
+
+
+# === Ingredient Input + Cost Calculation ===
+
+def get_ingredients():
+    ingredient_list = []
+    amount_list = []
+    unit_list = []
+
+    buy_amount_list = []
+    buy_unit_list = []
+    price_list = []
+
+    standard_amount = []
+    standard_buy_amount = []
+
+    while True:
+        item_name = not_blank("Ingredient (or 'xxx' to stop): ")
+        if item_name.lower() == "xxx":
+            break
+
+        amount = num_check("Amount needed: ")
+        unit = string_check("Unit? ", unit_map)
+
+        amount_buy = num_check("How much are you buying it in? ")
+        unit_buy = string_check("Buying unit? ", unit_map)
+        price = num_check("Price for bought amount: $")
+
+        # Convert amounts to standard units (g or ml)
+        conv_factor = unit_conversion.get(unit, 1)
+        conv_buy_factor = unit_conversion.get(unit_buy, 1)
+        std_amt = amount * conv_factor
+        std_buy = amount_buy * conv_buy_factor
+
+        # Append all
+        ingredient_list.append(item_name)
+        amount_list.append(amount)
+        unit_list.append(unit)
+        buy_amount_list.append(amount_buy)
+        buy_unit_list.append(unit_buy)
+        price_list.append(price)
+        standard_amount.append(std_amt)
+        standard_buy_amount.append(std_buy)
+
+    # DataFrame
+    recipe_dict = {
+        "Ingredients": ingredient_list,
+        "Amount": amount_list,
+        "Unit": unit_list,
+        "Buying Amount": buy_amount_list,
+        "Buying Unit": buy_unit_list,
+        "Price": price_list,
+        "Std Amount": standard_amount,
+        "Std Buy Amt": standard_buy_amount
+    }
+
+    recipe_frame = pandas.DataFrame(recipe_dict)
+    recipe_frame["Cost to make"] = recipe_frame["Price"] / recipe_frame["Std Buy Amt"] * recipe_frame["Std Amount"]
+
+    recipe_string = tabulate(recipe_frame[["Ingredients", "Amount", "Unit", "Price", "Cost to make"]],
+                             headers="keys", tablefmt="psql", showindex=False)
+
+    return recipe_string, recipe_frame
+
+
+# === Main Program ===
+
+print()
+print(make_statement("Recipe Calculator", "🥞"))
+print()
+
+if yes_no("Do you want to read the instructions? ") == "yes":
+    instructions()
+
+recipe_name = not_blank("Enter your recipe name: ")
+serving_size = num_check("Serving Size? ", "int")
+
+today = date.today()
+day = today.strftime("%d")
+month = today.strftime("%m")
+year = today.strftime("%Y")
+
+main_heading = make_statement(f"Recipe Calculator ({recipe_name}, {day}/{month}/{year})", "--")
+serving_string = f"Serving Size: {serving_size}"
+
+# Get recipe details
+recipe_string, recipe_frame = get_ingredients()
+
+# Calculate totals
+total_cost = recipe_frame["Cost to make"].sum()
+per_serve = total_cost / serving_size
+
+total_string = f"\nTotal Cost: ${total_cost:.2f}"
+per_serve_string = f"Per Serve Cost: ${per_serve:.2f}"
+
+# Output + Save to File
+to_write = [main_heading, "", serving_string, "", recipe_string, total_string, per_serve_string]
+
+for item in to_write:
+    print(item)
+
+file_name = f"{recipe_name}_{year}_{month}_{day}.txt"
+with open(file_name, "w+") as f:
+    for item in to_write:
+        f.write(item + "\n")
