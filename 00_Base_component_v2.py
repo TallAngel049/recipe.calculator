@@ -60,7 +60,6 @@ the same name name as your recipe and the date.
 
         ''')
 
-
 def num_check(question, num_type="float", exit_code=None):
     """Checks that response is a float / integer more than zero"""
 
@@ -119,6 +118,7 @@ def get_ingredients(rec_type):
     all_amount_buy = []
     all_unit_buy = []
     price_list = []
+    cost_list = []
 
     # loop starts here
     while True:
@@ -130,10 +130,21 @@ def get_ingredients(rec_type):
         amount = num_check("Amount needed: ")
         unit = string_check("Unit? ", unit_map)
         print()
+
+        # convert units
+        # converted_amount = amount * unit_conversion[unit]
+
         amount_buy = num_check("How much are you buying? ")
         unit_buy = string_check("Unit for buying amount? ", unit_map)
+        converted_amount_buy = amount_buy * unit_conversion[unit_buy]
+        # print("unit", unit)
+        # print("conversion factor", unit_conversion[unit])
+        # print("converted amount", converted_amount_buy)
+
         price = num_check("Price: ")
 
+        # calculate the cost to make
+        cost_to_make = (price / converted_amount_buy) * amount
 
         # Append all
         ingredient_list.append(item_name)
@@ -144,6 +155,8 @@ def get_ingredients(rec_type):
         all_unit_buy.append(unit_buy)
         price_list.append(price)
 
+        cost_list.append(cost_to_make)
+
     # recipes dictionary
     recipe_dict = {
         "Ingredients": ingredient_list,
@@ -152,13 +165,11 @@ def get_ingredients(rec_type):
         "Buying Amount": all_amount_buy,
         "Buying Unit": all_unit_buy,
         "Price": price_list,
+        "Cost to make": cost_list
     }
 
     # make panda
     recipe_frame = pandas.DataFrame(recipe_dict)
-
-    # calculate cost to make
-    recipe_frame['Cost to make'] = recipe_frame['Price'] / recipe_frame['Buying Amount'] * recipe_frame['Amount']
 
     # make expenses frame into a string with the desired columns
     if rec_type == "variable":
@@ -243,7 +254,7 @@ serving_size_string = f"Serving Size being made: {serving_size}"
 # Pandas write to file
 recipe_frame, recipe_string = get_ingredients("variable")
 
-total_cost = recipe_frame["Cost to make"].sum()
+total_cost = recipe_frame["Price"].sum()
 per_serve = total_cost / serving_size
 total_cost_to_make_string = f"\nTotal: ${total_cost:.2f}"
 per_serve_string = f"Per Serve: ${per_serve:.2f}"
@@ -271,5 +282,3 @@ text_file = open(write_to, "w+")
 for item in to_write:
     text_file.write(item)
     text_file.write("\n")
-
-print("How do I convert the units")
