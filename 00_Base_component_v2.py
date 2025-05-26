@@ -144,7 +144,7 @@ def get_ingredients(rec_type):
         price = num_check("Price: ")
 
         # calculate the cost to make
-        cost_to_make = (price / converted_amount_buy) * amount
+        cost_to_make = round((price / converted_amount_buy) * amount, 2)
 
         # Append all
         ingredient_list.append(item_name)
@@ -213,7 +213,8 @@ unit_conversion = {
     "ml": 1,
     "tbl": 15,
     "tsp": 5,
-    "cups": 240,
+    "cup": 240,
+    "cups": 250,
     "": 1
 }
 
