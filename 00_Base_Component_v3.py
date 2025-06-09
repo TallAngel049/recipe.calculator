@@ -136,10 +136,8 @@ def get_ingredients(rec_type):
         unit_buy = string_check("Unit for buying amount? ", unit_map)
         price = num_check("Price: ")
 
-        # convert the base unit (g or ml)t amount bought to
+        # convert the unit to g or ml t
         buying_unit = amount_buy * unit_conversion[unit_buy]
-
-        # convert amount needed to base unit (g or ml)
         needed_base = amount * unit_conversion[unit]
 
         # calculate cost per base unit
