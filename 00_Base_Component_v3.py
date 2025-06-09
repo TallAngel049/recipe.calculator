@@ -136,23 +136,17 @@ def get_ingredients(rec_type):
         unit_buy = string_check("Unit for buying amount? ", unit_map)
         price = num_check("Price: ")
 
+        # convert the base unit (g or ml)t amount bought to
+        buying_unit = amount_buy * unit_conversion[unit_buy]
 
-        if unit_buy or unit == "kg" "l":
-            converted_amount_buy = amount_buy or amount * unit_conversion[unit_buy]
-            # print("unit", unit)
-            # print("conversion factor", unit_conversion[unit])
-            # print("converted amount", converted_amount_buy)
-        else:
-            # convert units
-            converted_amount_buy = amount_buy / unit_conversion[unit_buy]
-            # print("unit", unit)
-            # print("conversion factor", unit_conversion[unit])
-            # print("converted amount", converted_amount_buy)
+        # convert amount needed to base unit (g or ml)
+        needed_base = amount * unit_conversion[unit]
 
+        # calculate cost per base unit
+        cost_per_unit = price / buying_unit
 
-        # calculate the cost to make
-        cost_to_make = round((price / converted_amount_buy) * amount, 2)
-
+        # calculate cost to make the needed amount
+        cost_to_make = round(cost_per_unit * needed_base, 2)
         if unit == unit_buy:
             cost_to_make = round(price / amount_buy * amount, 2)
 
@@ -293,10 +287,3 @@ text_file = open(write_to, "w+")
 for item in to_write:
     text_file.write(item)
     text_file.write("\n")
-
-# 200 g to 2 kg works
-# 2 kg to 2 kg works same with other all same units
-#
-#
-# 2l to 500ml does NOT work
-# none of the cups and tbl/tsp work
